@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
-
-protocol NavigableNode: AnyObject {
-    var uuid: IdentifiableUUID { get }
-    var parent: (any NavigableState)? { get set }
-    var reducer: (any Reducer)? { get set}
-    
-    func navigateAction(action: Action)
-}
+//
+//protocol NavigableNode: AnyObject {
+//    var uuid: IdentifiableUUID { get }
+//    var parent: (any NavigableState)? { get set }
+//    var reducer: (any Reducer)? { get set}
+//    
+//    func navigateAction(action: Action)
+//}

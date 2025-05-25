@@ -1,19 +1,56 @@
+////
+////  MainScreenView.swift
+////  TCA
+////
+////  Created by Gohar Vardanyan on 11.03.25.
+////
 //
-//  MainScreenView.swift
-//  TCA
+//import SwiftUI
 //
-//  Created by Gohar Vardanyan on 11.03.25.
-//
+//struct MainScreenView: View {
+//    @ObservedObject var reducer: MainScreenReducer
+//    
+//    var body: some View {
+//        VStack(spacing: 40) {
+//            Button {
+//                reducer.send(MainScreenReducer.MainScreenAction.showNavigationScreen1)
+//            } label: {
+//                Text("Push screen")
+//                    .padding()
+//                    .foregroundColor(.red)
+//                    .cornerRadius(10)
+//            }
+//            Button {
+//                reducer.send(MainScreenReducer.MainScreenAction.showNavigationScreen2)
+//            } label: {
+//                Text("Present new NavigationStack")
+//                    .padding()
+//                    .foregroundColor(.red)
+//                    .cornerRadius(10)
+//            }
+//            if let item = reducer.state.item {
+//                Text("\(item)")
+//                    .padding()
+//                    .foregroundColor(.blue)
+//                    .cornerRadius(10)
+//            }
+//        }
+//    }
+//}
 
 import SwiftUI
 
 struct MainScreenView: View {
-    @ObservedObject var reducer: MainScreenReducer
+    @ObservedObject var viewStore: ViewStore<MainScreenState, MainScreenAction>
+    
+    init(store: Store<MainScreenState, MainScreenAction>) {
+        self.viewStore = ViewStore(store: store)
+    }
     
     var body: some View {
         VStack(spacing: 40) {
             Button {
-                reducer.send(MainScreenReducer.MainScreenAction.showNavigationScreen1)
+                viewStore.send(.showNavigationScreen1)
             } label: {
                 Text("Push screen")
                     .padding()
@@ -21,14 +58,14 @@ struct MainScreenView: View {
                     .cornerRadius(10)
             }
             Button {
-                reducer.send(MainScreenReducer.MainScreenAction.showNavigationScreen2)
+                viewStore.send(.showNavigationScreen2)
             } label: {
                 Text("Present new NavigationStack")
                     .padding()
                     .foregroundColor(.red)
                     .cornerRadius(10)
             }
-            if let item = reducer.state.item {
+            if let item = viewStore.item {
                 Text("\(item)")
                     .padding()
                     .foregroundColor(.blue)

@@ -8,47 +8,89 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @ObservedObject var reducer: SettingsViewReducer<NavigationState<SettingsNavigationScreen, SettingsViewAction>>
-   
-    var body: some View {
-        NavigationStack(path: $reducer.coordinator.path) {
-            VStack(spacing: 20) {
-                Text("This is a Presented Screen which contains New Navigation Stack")
-                    .foregroundColor(.red)
-                    .foregroundStyle(.primary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .multilineTextAlignment(.center)
-                Button {
-                    reducer.send(SettingsViewAction.close)
-                } label: {
-                    Text("Close")
-                        .foregroundColor(.blue)
-                        .foregroundStyle(.secondary)
-                }
-                Button {
-                    reducer.send(SettingsViewAction.myAccount)
-                } label: {
-                    Text("My Accouunt")
-                        .foregroundColor(.blue)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .navigationDestination(for: PathItem<SettingsNavigationScreen>.self) { item in
-                AnyView(buildView(pathItem: item))
-            }
-        }
-        .fullScreenCover(item: $reducer.coordinator.presentedScreen) {  item in
-            AnyView(buildView(pathItem: item))
-        }
+    @ObservedObject var viewStore: ViewStore<SettingsState, SettingsViewAction>
+    let store: Store<SettingsState, SettingsViewAction>
+    
+    init(store: Store<SettingsState, SettingsViewAction>) {
+        self.store = store
+        self.viewStore = ViewStore(store: store)
     }
     
-    private func buildView(pathItem: PathItem<SettingsNavigationScreen>) -> any View {
-        switch pathItem.screen {
-        case SettingsNavigationScreen.myAccount:
-            let coordinator = reducer.coordinator.navigationItem(childActionType: MyAccountViewReducer.MyAccountAction.self)
-            let reducer = MyAccountViewReducer(coordinator: coordinator)
-            return MyAccountView(reducer: reducer)
-                .navigationTitle("My Account")
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("This is a Presented Screen which contains New Navigation Stack")
+                .foregroundColor(.red)
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
+            Button {
+                viewStore.send(.close)
+            } label: {
+                Text("Close")
+                    .foregroundColor(.blue)
+                    .foregroundStyle(.secondary)
+            }
+            Button {
+                viewStore.send(.myAccount)
+            } label: {
+                Text("My Accouunt")
+                    .foregroundColor(.blue)
+                    .foregroundStyle(.secondary)
+            }
+            if viewStore.myAccountState != nil {
+                MyAccountView(
+                    store: store.scope(
+                        state: { $0.myAccountState },
+                        action: SettingsViewAction.myAccountAction
+                    )
+                )
+            }
         }
     }
 }
+
+//struct SettingsView: View {
+//    @ObservedObject var reducer: SettingsViewReducer<NavigationState<SettingsNavigationScreen, SettingsViewAction>>
+//   
+//    var body: some View {
+//        NavigationStack(path: $reducer.coordinator.path) {
+//            VStack(spacing: 20) {
+//                Text("This is a Presented Screen which contains New Navigation Stack")
+//                    .foregroundColor(.red)
+//                    .foregroundStyle(.primary)
+//                    .frame(maxWidth: .infinity, alignment: .center)
+//                    .multilineTextAlignment(.center)
+//                Button {
+//                    reducer.send(SettingsViewAction.close)
+//                } label: {
+//                    Text("Close")
+//                        .foregroundColor(.blue)
+//                        .foregroundStyle(.secondary)
+//                }
+//                Button {
+//                    reducer.send(SettingsViewAction.myAccount)
+//                } label: {
+//                    Text("My Accouunt")
+//                        .foregroundColor(.blue)
+//                        .foregroundStyle(.secondary)
+//                }
+//            }
+//            .navigationDestination(for: PathItem<SettingsNavigationScreen>.self) { item in
+//                AnyView(buildView(pathItem: item))
+//            }
+//        }
+//        .fullScreenCover(item: $reducer.coordinator.presentedScreen) {  item in
+//            AnyView(buildView(pathItem: item))
+//        }
+//    }
+//    
+//    private func buildView(pathItem: PathItem<SettingsNavigationScreen>) -> any View {
+//        switch pathItem.screen {
+//        case SettingsNavigationScreen.myAccount:
+//            let coordinator = reducer.coordinator.navigationItem(childActionType: MyAccountViewReducer.MyAccountAction.self)
+//            let reducer = MyAccountViewReducer(coordinator: coordinator)
+//            return MyAccountView(reducer: reducer)
+//                .navigationTitle("My Account")
+//        }
+//    }
+//}

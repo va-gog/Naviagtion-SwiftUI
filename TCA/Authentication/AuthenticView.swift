@@ -1,21 +1,47 @@
+////
+////  AuthenticView.swift
+////  TCA
+////
+////  Created by Gohar Vardanyan on 11.03.25.
+////
 //
-//  AuthenticView.swift
-//  TCA
+//import SwiftUI
 //
-//  Created by Gohar Vardanyan on 11.03.25.
-//
+//struct AuthenticView: View {
+//    @ObservedObject var reducer: AuthenticationViewReducer
+//    
+//    var body: some View {
+//        VStack {
+//            Text("Authentication")
+//                .padding()
+//            Button(action: {
+//                reducer.send(AuthenticationViewReducer.AuthViewReducerAction.loggedIn)
+//            }) {
+//                Text("LogIn")
+//                    .foregroundColor(.blue)
+//                    .padding()
+//                    .background(Color(.systemGray5))
+//                    .cornerRadius(10)
+//            }
+//        }
+//    }
+//}
 
 import SwiftUI
 
 struct AuthenticView: View {
-    @ObservedObject var reducer: AuthenticationViewReducer
+    @ObservedObject var viewStore: ViewStore<AuthenticationState, AuthenticationAction>
+    
+    init(store: Store<AuthenticationState, AuthenticationAction>) {
+        self.viewStore = ViewStore(store: store)
+    }
     
     var body: some View {
         VStack {
             Text("Authentication")
                 .padding()
             Button(action: {
-                reducer.send(AuthenticationViewReducer.AuthViewReducerAction.loggedIn)
+                viewStore.send(.loggedIn)
             }) {
                 Text("LogIn")
                     .foregroundColor(.blue)

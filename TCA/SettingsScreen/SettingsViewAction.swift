@@ -5,10 +5,8 @@
 //  Created by Gohar Vardanyan on 17.03.25.
 //
 
-enum SettingsViewAction: Action {
-    case close
-    case myAccount
-    case logout(MainScreenReducer.MainScreenAction)
-    case add(MainScreenReducer.MainScreenAction)
-
-}
+//enum SettingsViewAction: Equatable {
+//    case close
+//    case myAccount
+//    // Add more actions as needed
+//}

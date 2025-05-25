@@ -8,50 +8,65 @@
 import SwiftUI
 
 struct AppLaunchView: View {
-    @StateObject var reducer: AppLaunchReducer = AppLaunchReducer(coordinator: NavigationState<WeatherAppScreen, AppLaunchReducer.AppLaunchAction>(actionPublisher: nil))
+    @StateObject var store = Store(
+        initialState: AppLaunchState(),
+        reducer: appLaunchReducer
+    )
+    @ObservedObject var viewStore: ViewStore<AppLaunchState, AppLaunchAction>
     
-    var body: some View {
-        NavigationStack(path: $reducer.coordinator.path) {
-            EmptyView()
-            .navigationDestination(for: PathItem<WeatherAppScreen>.self) { item in
-                AnyView(buildView(pathItem: item))
-            }
-        }
-        .fullScreenCover(item: $reducer.coordinator.presentedScreen) {  item in
-            AnyView(buildView(pathItem: item))
-        }
-        .onAppear() {
-            reducer.send(AppLaunchReducer.AppLaunchAction.locationAccess)
-        }
+    init() {
+        let store = Store(
+            initialState: AppLaunchState(),
+            reducer: appLaunchReducer
+        )
+        self._store = StateObject(wrappedValue: store)
+        self.viewStore = ViewStore(store: store)
     }
     
-    private func buildView(pathItem: PathItem<WeatherAppScreen>) -> any View {
-        switch pathItem.screen {
-        case WeatherAppScreen.locationAccess:
-            let coordinator = reducer.coordinator.navigationItem(childActionType: LocPermitionViewReducer.LocPermitionViewReducerAction.self)
-            let reducer = LocPermitionViewReducer(coordinator: coordinator)
-            return LocPermitionView(reducer: reducer)
-            
-        case WeatherAppScreen.authentication:
-            let coordinator = reducer.coordinator.navigationItem(childActionType: AuthenticationViewReducer.AuthViewReducerAction.self)
-            let reducer = AuthenticationViewReducer(coordinator: coordinator)
-            return AuthenticView(reducer: reducer)
-            
-        case WeatherAppScreen.main:
-            let coordinator = reducer.coordinator.navigationItem(childActionType: MainScreenReducer.MainScreenAction.self)
-            let reducer = MainScreenReducer(coordinator: coordinator)
-            return MainScreenView(reducer: reducer)
-            
-        case WeatherAppScreen.forecast:
-            let coordinator = reducer.coordinator.navigationItem(childActionType: ForecastReducer.ForecastScreenAction.self)
-            let reducer = ForecastReducer(coordinator: coordinator)
-            return ForecastView(reducer: reducer)
-            
-        case WeatherAppScreen.settings:
-            guard let coordinator = reducer.coordinator.navigationState(childScreenType: SettingsNavigationScreen.self,
-                                                                        childActionType: SettingsViewAction.self) as? NavigationState<SettingsNavigationScreen, SettingsViewAction> else { return EmptyView() }
-            let reducer = SettingsViewReducer(coordinator: coordinator)
-            return SettingsView(reducer: reducer)
+    var body: some View {
+        ZStack {
+            Color.white.ignoresSafeArea()
+            if viewStore.locPermitionState != nil {
+                LocPermitionView(
+                    store: store.scope(
+                        state: { $0.locPermitionState },
+                        action: AppLaunchAction.locPermitionAction
+                    )
+                )
+            } else if viewStore.authenticationState != nil {
+                AuthenticView(
+                    store: store.scope(
+                        state: { $0.authenticationState },
+                        action: AppLaunchAction.authenticationAction
+                    )
+                )
+            } else if viewStore.mainScreenState != nil {
+                MainScreenView(
+                    store: store.scope(
+                        state: { $0.mainScreenState },
+                        action: AppLaunchAction.mainScreenAction
+                    )
+                )
+            }
+            if viewStore.forecastState != nil {
+                ForecastView(
+                    store: store.scope(
+                        state: { $0.forecastState },
+                        action: AppLaunchAction.forecastAction
+                    )
+                )
+            }
+            if viewStore.settingsState != nil {
+                SettingsView(
+                    store: store.scope(
+                        state: { $0.settingsState },
+                        action: AppLaunchAction.settingsAction
+                    )
+                )
+            }
+        }
+        .onAppear {
+            viewStore.send(.onAppear)
         }
     }
 }

@@ -1,38 +1,60 @@
+////
+////  MyAccountViewReducer.swift
+////  TCA
+////
+////  Created by Gohar Vardanyan on 17.03.25.
+////
 //
-//  MyAccountViewReducer.swift
-//  TCA
+//import Combine
 //
-//  Created by Gohar Vardanyan on 17.03.25.
-//
+//final class MyAccountViewReducer: ObservableObject, Reducer {
+//    final class MyAccountState: ReducerState {}
+//    
+//    enum MyAccountAction: Action {
+//        case add
+//        case logout
+//    }
+//    
+//    typealias State = MyAccountState
+//    
+//    private var coordinator: NavigableNode
+//    @Published var state = MyAccountState()
+//    var cancelables = Set<AnyCancellable>()
+//    
+//    init(coordinator: NavigableNode) {
+//        self.coordinator = coordinator
+//        self.coordinator.reducer = self
+//    }
+//    
+//    func send(_ action: Action) {
+//        guard let action = action as? MyAccountAction else { return }
+//        switch action {
+//        case .logout:
+//            coordinator.navigateAction(action: SettingsViewAction.logout(MainScreenReducer.MainScreenAction.logout))
+//        case .add:
+//            coordinator.navigateAction(action: SettingsViewAction.logout(MainScreenReducer.MainScreenAction.add("Added from MyAccount")))
+//        }
+//    }
+//}
 
-import Combine
+import Foundation
 
-final class MyAccountViewReducer: ObservableObject, Reducer {
-    final class MyAccountState: ReducerState {}
-    
-    enum MyAccountAction: Action {
-        case add
-        case logout
-    }
-    
-    typealias State = MyAccountState
-    
-    private var coordinator: NavigableNode
-    @Published var state = MyAccountState()
-    var cancelables = Set<AnyCancellable>()
-    
-    init(coordinator: NavigableNode) {
-        self.coordinator = coordinator
-        self.coordinator.reducer = self
-    }
-    
-    func send(_ action: Action) {
-        guard let action = action as? MyAccountAction else { return }
-        switch action {
-        case .logout:
-            coordinator.navigateAction(action: SettingsViewAction.logout(MainScreenReducer.MainScreenAction.logout))
-        case .add:
-            coordinator.navigateAction(action: SettingsViewAction.logout(MainScreenReducer.MainScreenAction.add("Added from MyAccount")))
-        }
+struct MyAccountState: Equatable {
+    // Add any my account-specific state here
+}
+
+enum MyAccountAction: Equatable {
+    case add
+    case logout
+}
+
+let myAccountReducer = Reducer<MyAccountState, MyAccountAction, Void> { state, action, _ in
+    switch action {
+    case .logout:
+        // Navigation logic can be handled by parent
+        return .none
+    case .add:
+        // Add logic can be handled here or by parent
+        return .none
     }
 }
