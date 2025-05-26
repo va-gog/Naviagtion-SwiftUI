@@ -13,23 +13,26 @@ struct SettingsState: Equatable {
 }
 
 enum SettingsViewAction: Equatable {
-    case close
     case myAccount
     case myAccountAction(MyAccountAction)
+    case close
+    case myAccountDidRemove(String)
+    
 }
 
 let settingsReducer = Reducer<SettingsState, SettingsViewAction, Void> { state, action, _ in
     switch action {
-    case .close:
-        // Handle close logic or let parent handle navigation
-        return .none
     case .myAccount:
         state.myAccountState = MyAccountState()
         return .none
     case .myAccountAction(.logout):
         state.myAccountState = nil
+        return Effect.just(.close)
+    case .myAccountAction(.remove(let id)):
+        return Effect.just(.myAccountDidRemove(id))
+    case .close:
         return .none
-    case .myAccountAction:
+    case .myAccountDidRemove(_):
         return .none
     }
 }

@@ -44,14 +44,14 @@ struct MyAccountView: View {
                 viewStore.send(.logout)
             } label: {
                 Text("Logout")
-                    .foregroundColor(.red)
+                    .foregroundColor(.yellow)
                     .foregroundStyle(.secondary)
             }
             Button {
-                viewStore.send(.add)
+                viewStore.send(.remove("ID"))
             } label: {
-                Text("Add")
-                    .foregroundColor(.red)
+                Text("Remove")
+                    .foregroundColor(.yellow)
                     .foregroundStyle(.secondary)
             }
         }

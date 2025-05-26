@@ -35,13 +35,9 @@ let appLaunchReducer = Reducer<AppLaunchState, AppLaunchAction, Void> { state, a
         state.locPermitionState = nil
         state.authenticationState = AuthenticationState()
         return .none
-    case .locPermitionAction:
-        return .none
     case .authenticationAction(.loggedIn):
         state.authenticationState = nil
         state.mainScreenState = MainScreenState()
-        return .none
-    case .authenticationAction:
         return .none
     case .mainScreenAction(.showNavigationScreen1):
         state.forecastState = ForecastState()
@@ -49,20 +45,33 @@ let appLaunchReducer = Reducer<AppLaunchState, AppLaunchAction, Void> { state, a
     case .mainScreenAction(.showNavigationScreen2):
         state.settingsState = SettingsState()
         return .none
-    case .mainScreenAction:
-        return .none
     case .forecastAction(.logout):
         state.forecastState = nil
         state.mainScreenState = nil
         state.authenticationState = AuthenticationState()
         return .none
-    case .settingsAction:
-        return .none
     case .forecastAction(.add(let item)):
         return Effect.just(.forecastAdded(item))
     case .forecastAdded(let value):
         state.forecastState = nil
-        state.mainScreenState?.item = value
+        state.mainScreenState?.items.append(value)
+        return .none
+    case .settingsAction(.close):
+        state.settingsState = nil
+        return .none
+    case .settingsAction(.myAccountAction(.logout)):
+        return Effect.just(.settingsAction(.close))
+    case .settingsAction(.myAccountDidRemove(let id)):
+        state.mainScreenState?.items.removeAll { $0 == id }
+        return .none
+    case .settingsAction(let settingsAction):
+        // Forward the action to the child reducer if state exists
+        if var settingsState = state.settingsState {
+            let _ = settingsReducer.reduce(&settingsState, settingsAction, ())
+            state.settingsState = settingsState
+        }
+        return .none
+    default:
         return .none
     }
 }

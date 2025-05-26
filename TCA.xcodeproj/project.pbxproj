@@ -78,6 +78,7 @@
 				842597152D4CB57A00EBFBE3 /* TCA */,
 				842597262D4CB57C00EBFBE3 /* TCATests */,
 				842597302D4CB57C00EBFBE3 /* TCAUITests */,
+				846754F22DE3CA8B00EA3E15 /* Frameworks */,
 				842597142D4CB57A00EBFBE3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +91,13 @@
 				8425972D2D4CB57C00EBFBE3 /* TCAUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		846754F22DE3CA8B00EA3E15 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -195,6 +203,8 @@
 			);
 			mainGroup = 8425970A2D4CB57A00EBFBE3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 842597142D4CB57A00EBFBE3 /* Products */;
 			projectDirPath = "";

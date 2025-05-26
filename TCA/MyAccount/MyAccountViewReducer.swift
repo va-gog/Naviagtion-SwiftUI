@@ -44,17 +44,15 @@ struct MyAccountState: Equatable {
 }
 
 enum MyAccountAction: Equatable {
-    case add
+    case remove(String)
     case logout
 }
 
 let myAccountReducer = Reducer<MyAccountState, MyAccountAction, Void> { state, action, _ in
     switch action {
     case .logout:
-        // Navigation logic can be handled by parent
         return .none
-    case .add:
-        // Add logic can be handled here or by parent
+    case .remove(_):
         return .none
     }
 }

@@ -65,10 +65,10 @@ struct MainScreenView: View {
                     .foregroundColor(.red)
                     .cornerRadius(10)
             }
-            if let item = viewStore.item {
-                Text("\(item)")
+            ForEach(viewStore.items, id: \.self) { item in
+                Text(item)
                     .padding()
-                    .foregroundColor(.blue)
+                    .foregroundColor(.red)
                     .cornerRadius(10)
             }
         }

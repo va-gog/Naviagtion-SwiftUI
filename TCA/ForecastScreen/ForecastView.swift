@@ -44,14 +44,14 @@ struct ForecastView: View {
                 viewStore.send(.logout)
             } label: {
                 Text("Logout")
-                    .foregroundColor(.red)
+                    .foregroundColor(.green)
                     .foregroundStyle(.secondary)
             }
             Button {
                 viewStore.send(.add("Added"))
             } label: {
                 Text("Add")
-                    .foregroundColor(.red)
+                    .foregroundColor(.green)
                     .foregroundStyle(.secondary)
             }
         }

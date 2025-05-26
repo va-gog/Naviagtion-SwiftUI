@@ -8,5 +8,6 @@
 //enum SettingsViewAction: Equatable {
 //    case close
 //    case myAccount
+//    case myAccountAction(MyAccountAction)
 //    // Add more actions as needed
 //}
