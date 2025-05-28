@@ -52,7 +52,8 @@ let myAccountReducer = Reducer<MyAccountState, MyAccountAction, Void> { state, a
     switch action {
     case .logout:
         return .none
-    case .remove(_):
-        return .none
+    case .remove(let id):
+        // Bubble up to parent (SettingsReducer)
+        return Effect.just(.remove(id))
     }
 }

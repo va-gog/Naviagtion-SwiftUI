@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		846754F92DE7406000EA3E15 /* CasePaths in Frameworks */ = {isa = PBXBuildFile; productRef = 846754F82DE7406000EA3E15 /* CasePaths */; };
+		846754FB2DE7406000EA3E15 /* CasePathsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 846754FA2DE7406000EA3E15 /* CasePathsCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		842597242D4CB57C00EBFBE3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				846754FB2DE7406000EA3E15 /* CasePathsCore in Frameworks */,
+				846754F92DE7406000EA3E15 /* CasePaths in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +127,8 @@
 			);
 			name = TCA;
 			packageProductDependencies = (
+				846754F82DE7406000EA3E15 /* CasePaths */,
+				846754FA2DE7406000EA3E15 /* CasePathsCore */,
 			);
 			productName = TCA;
 			productReference = 842597132D4CB57A00EBFBE3 /* TCA.app */;
@@ -204,6 +213,7 @@
 			mainGroup = 8425970A2D4CB57A00EBFBE3;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				846754F72DE7404100EA3E15 /* XCRemoteSwiftPackageReference "swift-case-paths" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 842597142D4CB57A00EBFBE3 /* Products */;
@@ -562,6 +572,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		846754F72DE7404100EA3E15 /* XCRemoteSwiftPackageReference "swift-case-paths" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-case-paths";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		846754F82DE7406000EA3E15 /* CasePaths */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 846754F72DE7404100EA3E15 /* XCRemoteSwiftPackageReference "swift-case-paths" */;
+			productName = CasePaths;
+		};
+		846754FA2DE7406000EA3E15 /* CasePathsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 846754F72DE7404100EA3E15 /* XCRemoteSwiftPackageReference "swift-case-paths" */;
+			productName = CasePathsCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8425970B2D4CB57A00EBFBE3 /* Project object */;
 }

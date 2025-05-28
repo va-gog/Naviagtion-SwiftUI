@@ -76,4 +76,5 @@ let mainScreenReducer = Reducer<MainScreenState, MainScreenAction, Void> { state
     case .logout:
         return .none
     }
+    
 }

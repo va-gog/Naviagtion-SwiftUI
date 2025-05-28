@@ -16,8 +16,6 @@ enum SettingsViewAction: Equatable {
     case myAccount
     case myAccountAction(MyAccountAction)
     case close
-    case myAccountDidRemove(String)
-    
 }
 
 let settingsReducer = Reducer<SettingsState, SettingsViewAction, Void> { state, action, _ in
@@ -25,14 +23,9 @@ let settingsReducer = Reducer<SettingsState, SettingsViewAction, Void> { state, 
     case .myAccount:
         state.myAccountState = MyAccountState()
         return .none
-    case .myAccountAction(.logout):
-        state.myAccountState = nil
-        return Effect.just(.close)
-    case .myAccountAction(.remove(let id)):
-        return Effect.just(.myAccountDidRemove(id))
-    case .close:
+    case .myAccountAction:
         return .none
-    case .myAccountDidRemove(_):
+    case .close:
         return .none
     }
 }
