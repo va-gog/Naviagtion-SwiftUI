@@ -1,3 +1,10 @@
+//
+//  Effect.swift
+//  TCA
+//
+//  Created by Gohar Vardanyan on 16.05.25.
+//
+
 import Combine
 
 public struct Effect<Action> {
@@ -27,6 +34,16 @@ public extension Effect {
         Effect(
             Publishers.Merge(self.publisher, other.publisher)
                 .eraseToAnyPublisher()
+        )
+    }
+    
+    static func concatenate(_ effects: Effect...) -> Effect {
+        return .init(
+            effects
+                .map { $0.publisher }
+                .reduce(Empty<Action, Never>().eraseToAnyPublisher()) { acc, next in
+                    acc.append(next).eraseToAnyPublisher()
+                }
         )
     }
 }

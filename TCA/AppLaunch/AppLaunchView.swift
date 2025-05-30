@@ -24,49 +24,79 @@ struct AppLaunchView: View {
     }
     
     var body: some View {
-        ZStack {
-            Color.white.ignoresSafeArea()
-            if viewStore.locPermitionState != nil {
-                LocPermitionView(
-                    store: store.scope(
-                        state: { $0.locPermitionState },
-                        action: AppLaunchAction.locPermitionAction
-                    )
-                )
-            } else if viewStore.authenticationState != nil {
-                AuthenticView(
-                    store: store.scope(
-                        state: { $0.authenticationState },
-                        action: AppLaunchAction.authenticationAction
-                    )
-                )
-            } else if viewStore.mainScreenState != nil {
-                MainScreenView(
-                    store: store.scope(
-                        state: { $0.mainScreenState },
-                        action: AppLaunchAction.mainScreenAction
-                    )
-                )
+        NavigationStack(path: Binding(
+            get: { viewStore.navigationState.navigationPath },
+            set: { viewStore.send(.navigation(.setPath($0))) }
+        )) {
+            Group {
+                if let root = viewStore.navigationState.navigationPath.first {
+                    screenView(for: root)
+                }
             }
-            if viewStore.forecastState != nil {
-                ForecastView(
-                    store: store.scope(
-                        state: { $0.forecastState },
-                        action: AppLaunchAction.forecastAction
-                    )
-                )
-            }
-            if viewStore.settingsState != nil {
-                SettingsView(
-                    store: store.scope(
-                        state: { $0.settingsState },
-                        action: AppLaunchAction.settingsAction
-                    )
-                )
+            .navigationDestination(for: AppScreenState.self) { screen in
+                screenView(for: screen)
             }
         }
         .onAppear {
             viewStore.send(.onAppear)
+        }
+        .fullScreenCover(
+            item: Binding(
+                get: { viewStore.navigationState.screenCoverState },
+                set: { newValue in
+                    viewStore.send(.navigation(.setScreenCoverState(newValue)))
+                }
+            )
+        ) { screen in
+            screenView(for: screen)
+        }
+    }
+    
+    @ViewBuilder
+    func screenView(for screen: AppScreenState) -> some View {
+        switch screen {
+        case .locPermition(let state):
+            LocPermitionView(
+                store: store.scope(
+                    state: { _ in state },
+                    action: { .locPermitionAction($0) }
+                )
+            )
+        case .authentication(let state):
+            AuthenticView(
+                store: store.scope(
+                    state: { _ in state },
+                    action: { .authenticationAction($0) }
+                )
+            )
+        case .main(let state):
+            MainScreenView(
+                store: store.scope(
+                    state: { _ in state },
+                    action: { .mainScreenAction($0) }
+                )
+            )
+        case .forecast(let state):
+            ForecastView(
+                store: store.scope(
+                    state: { _ in state },
+                    action: { .forecastAction($0) }
+                )
+            )
+        case .settings(let state):
+            SettingsView(
+                store: store.scope(
+                    state: { _ in state },
+                    action: { .settingsAction($0) }
+                )
+            )
+        case .myAccount(let state):
+            MyAccountView(
+                store: store.scope(
+                    state: { _ in state },
+                    action: { .myAccountAction($0) }
+                )
+            )
         }
     }
 }

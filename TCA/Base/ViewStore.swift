@@ -1,3 +1,10 @@
+//
+//  ViewStore.swift
+//  TCA
+//
+//  Created by Gohar Vardanyan on 16.05.25.
+//
+
 import Combine
 
 @dynamicMemberLookup

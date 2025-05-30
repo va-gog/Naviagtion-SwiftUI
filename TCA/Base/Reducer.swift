@@ -1,3 +1,10 @@
+//
+//  Reducer.swift
+//  TCA
+//
+//  Created by Gohar Vardanyan on 16.05.25.
+//
+
 import CasePaths
 
 public struct Reducer<State, Action, Environment> {
@@ -10,15 +17,14 @@ public struct Reducer<State, Action, Environment> {
 
 public extension Reducer {
     func pullback<ParentState, ParentAction, ParentEnvironment>(
-        state toChildState: WritableKeyPath<ParentState, State?>,
+        state toChildState: WritableKeyPath<ParentState, State>,
         action toChildAction: AnyCasePath<ParentAction, Action>,
         environment toChildEnvironment: @escaping (ParentEnvironment) -> Environment
     ) -> Reducer<ParentState, ParentAction, ParentEnvironment> {
         Reducer<ParentState, ParentAction, ParentEnvironment> { parentState, parentAction, parentEnv in
-            guard let childAction = toChildAction.extract(from: parentAction),
-                  parentState[keyPath: toChildState] != nil
+            guard let childAction = toChildAction.extract(from: parentAction)
             else { return .none }
-            let effect = self.reduce(&parentState[keyPath: toChildState]!, childAction, toChildEnvironment(parentEnv))
+            let effect = self.reduce(&parentState[keyPath: toChildState], childAction, toChildEnvironment(parentEnv))
             return effect.map(toChildAction.embed)
         }
     }

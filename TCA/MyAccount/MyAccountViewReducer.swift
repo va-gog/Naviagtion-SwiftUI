@@ -1,46 +1,14 @@
-////
-////  MyAccountViewReducer.swift
-////  TCA
-////
-////  Created by Gohar Vardanyan on 17.03.25.
-////
 //
-//import Combine
+//  MyAccountViewReducer.swift
+//  TCA
 //
-//final class MyAccountViewReducer: ObservableObject, Reducer {
-//    final class MyAccountState: ReducerState {}
-//    
-//    enum MyAccountAction: Action {
-//        case add
-//        case logout
-//    }
-//    
-//    typealias State = MyAccountState
-//    
-//    private var coordinator: NavigableNode
-//    @Published var state = MyAccountState()
-//    var cancelables = Set<AnyCancellable>()
-//    
-//    init(coordinator: NavigableNode) {
-//        self.coordinator = coordinator
-//        self.coordinator.reducer = self
-//    }
-//    
-//    func send(_ action: Action) {
-//        guard let action = action as? MyAccountAction else { return }
-//        switch action {
-//        case .logout:
-//            coordinator.navigateAction(action: SettingsViewAction.logout(MainScreenReducer.MainScreenAction.logout))
-//        case .add:
-//            coordinator.navigateAction(action: SettingsViewAction.logout(MainScreenReducer.MainScreenAction.add("Added from MyAccount")))
-//        }
-//    }
-//}
+//  Created by Gohar Vardanyan on 17.03.25.
+//
 
 import Foundation
 
-struct MyAccountState: Equatable {
-    // Add any my account-specific state here
+struct MyAccountState: State {
+    var id: UUID = UUID()
 }
 
 enum MyAccountAction: Equatable {
@@ -53,7 +21,6 @@ let myAccountReducer = Reducer<MyAccountState, MyAccountAction, Void> { state, a
     case .logout:
         return .none
     case .remove(let id):
-        // Bubble up to parent (SettingsReducer)
         return Effect.just(.remove(id))
     }
 }

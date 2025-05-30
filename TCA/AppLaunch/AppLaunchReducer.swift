@@ -9,141 +9,54 @@ import Foundation
 import Combine
 import CasePaths
 
-struct AppLaunchState: Equatable {
-    var locPermitionState: LocPermitionState? = nil
-    var authenticationState: AuthenticationState? = nil
-    var mainScreenState: MainScreenState? = nil
-    var forecastState: ForecastState? = nil
-    var settingsState: SettingsState? = nil
-}
-
 enum AppLaunchAction: Equatable {
     case onAppear
+    case navigation(NavigationAction<AppScreenState>)
     case locPermitionAction(LocPermitionAction)
     case authenticationAction(AuthenticationAction)
     case mainScreenAction(MainScreenAction)
     case forecastAction(ForecastAction)
     case settingsAction(SettingsViewAction)
-    case forecastAdded(String)
+    case myAccountAction(MyAccountAction)
 }
 
-//let appLaunchReducer = Reducer<AppLaunchState, AppLaunchAction, Void> { state, action, _ in
-//    switch action {
-//    case .onAppear:
-//        state.locPermitionState = LocPermitionState()
-//        return .none
-//    case .locPermitionAction(.locationAccessPermited):
-//        state.locPermitionState = nil
-//        state.authenticationState = AuthenticationState()
-//        return .none
-//    case .authenticationAction(.loggedIn):
-//        state.authenticationState = nil
-//        state.mainScreenState = MainScreenState()
-//        return .none
-//    case .mainScreenAction(.showNavigationScreen1):
-//        state.forecastState = ForecastState()
-//        return .none
-//    case .mainScreenAction(.showNavigationScreen2):
-//        state.settingsState = SettingsState()
-//        return .none
-//    case .forecastAction(.logout):
-//        state.forecastState = nil
-//        state.mainScreenState = nil
-//        state.authenticationState = AuthenticationState()
-//        return .none
-//    case .forecastAction(.add(let item)):
-//        return Effect.just(.forecastAdded(item))
-//    case .forecastAdded(let value):
-//        state.forecastState = nil
-//        state.mainScreenState?.items.append(value)
-//        return .none
-//    case .settingsAction(.close):
-//        state.settingsState = nil
-//        return .none
-//    case .settingsAction(.myAccountAction(.logout)):
-//        return Effect.just(.settingsAction(.close))
-//    case .settingsAction(let settingsAction):
-//        if var settingsState = state.settingsState {
-//            let action = settingsReducer.reduce(&settingsState, settingsAction, ()).map( { AppLaunchAction.settingsAction($0) } )
-//            state.settingsState = settingsState
-//            return action
-//        }
-//
-//        return .none
-//    default:
-//        return .none
-//    }
-//}
-
-let appLaunchReducer = Reducer<AppLaunchState, AppLaunchAction, Void>.combine(
-    // Child reducers
-    settingsReducer.pullback(
-        state: \.settingsState,
-        action: /AppLaunchAction.settingsAction,
+let navReducer: Reducer<AppNavigationState, NavigationAction<AppScreenState>, Void> = navigationReducer()
+let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.combine(
+    navReducer.pullback(
+        state: \.navigationState,
+        action: /AppLaunchAction.navigation,
         environment: { _ in () }
     ),
-    mainScreenReducer.pullback(
-        state: \.mainScreenState,
-        action: /AppLaunchAction.mainScreenAction,
-        environment: { _ in () }
-    ),
-    forecastReducer.pullback(
-        state: \.forecastState,
-        action: /AppLaunchAction.forecastAction,
-        environment: { _ in () }
-    ),
-    locPermitionReducer.pullback(
-        state: \.locPermitionState,
-        action: /AppLaunchAction.locPermitionAction,
-        environment: { _ in () }
-    ),
-    authenticationReducer.pullback(
-        state: \.authenticationState,
-        action: /AppLaunchAction.authenticationAction,
-        environment: { _ in () }
-    ),
-    // Parent-level reducer
-    Reducer { state, action, _ in
+    Reducer<AppLaunchState, AppLaunchAction, Void> { state, action, _ in
         switch action {
         case .onAppear:
-            state.locPermitionState = LocPermitionState()
-            return .none
+            return Effect.just(.navigation(.present(.locPermition(LocPermitionState()))))
         case .locPermitionAction(.locationAccessPermited):
-            state.locPermitionState = nil
-            state.authenticationState = AuthenticationState()
-            return .none
+            return Effect.just(.navigation(.present(.authentication(AuthenticationState()))))
         case .authenticationAction(.loggedIn):
-            state.authenticationState = nil
-            state.mainScreenState = MainScreenState()
-            return .none
+            return .concatenate(
+                Effect.just(.navigation(.dismiss)),
+                Effect.just(.navigation(.push(.main(MainScreenState()))))
+            )
         case .mainScreenAction(.showNavigationScreen1):
-            state.forecastState = ForecastState()
-            return .none
+            return Effect.just(.navigation(.push(.forecast(ForecastState()))))
         case .mainScreenAction(.showNavigationScreen2):
-            state.settingsState = SettingsState()
-            return .none
+            return Effect.just(.navigation(.push(.settings(SettingsState()))))
         case .forecastAction(.logout):
-            state.forecastState = nil
-            state.mainScreenState = nil
-            state.authenticationState = AuthenticationState()
-            return .none
-        case .forecastAction(.add(let item)):
-            return Effect.just(.forecastAdded(item))
-        case .forecastAdded(let value):
-            state.forecastState = nil
-            state.mainScreenState?.items.append(value)
-            return .none
+            return .concatenate(
+                Effect.just(.navigation(.popToRoot)),
+                Effect.just(.navigation(.present(.authentication(AuthenticationState()))))
+            )
+        case .forecastAction(.add(let id)):
+            return .concatenate(
+                Effect.just(.mainScreenAction(.add(id))),
+                Effect.just(.navigation(.pop))
+            )
         case .settingsAction(.close):
-            state.settingsState = nil
-            return .none
-        case .settingsAction(.myAccountAction(.logout)):
-            return Effect.just(.settingsAction(.close))
-        case .settingsAction(.myAccountAction(.remove(let id))):
-             state.mainScreenState?.items.removeLast()
-            state.mainScreenState = state.mainScreenState
-            return .none
+            return Effect.just(.navigation(.pop))
         default:
             return .none
         }
     }
 )
+
