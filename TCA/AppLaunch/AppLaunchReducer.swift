@@ -9,6 +9,8 @@ import Foundation
 import Combine
 import CasePaths
 
+import CasePaths
+
 enum AppLaunchAction: Equatable {
     case onAppear
     case navigation(NavigationAction<AppScreenState>)
@@ -20,6 +22,25 @@ enum AppLaunchAction: Equatable {
     case myAccountAction(MyAccountAction)
 }
 
+let mainScreenForEach = forEachEnumCase(
+    statePath: \AppNavigationState.navigationPath,
+    casePath: /AppScreenState.main,
+    actionPath: /AppLaunchAction.mainScreenAction,
+    reducer: mainScreenReducer
+)
+let forecastForEach = forEachEnumCase(
+    statePath: \AppNavigationState.navigationPath,
+    casePath: /AppScreenState.forecast,
+    actionPath: /AppLaunchAction.forecastAction,
+    reducer: forecastReducer
+)
+let myAccountForEach = forEachEnumCase(
+    statePath: \AppNavigationState.navigationPath,
+    casePath: /AppScreenState.myAccount,
+    actionPath: /AppLaunchAction.myAccountAction,
+    reducer: myAccountReducer
+)
+
 let navReducer: Reducer<AppNavigationState, NavigationAction<AppScreenState>, Void> = navigationReducer()
 let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.combine(
     navReducer.pullback(
@@ -27,6 +48,19 @@ let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.c
         action: /AppLaunchAction.navigation,
         environment: { _ in () }
     ),
+    mainScreenForEach.pullback(
+           state: \.navigationState,
+           action: .self,
+           environment: { _ in () }
+       ),
+       forecastForEach.pullback(
+           state: \.navigationState,
+           action: .self,
+           environment: { _ in () }
+       ),
+    myAccountForEach.pullback(state: \.navigationState, action: .self,
+                              environment: { _ in ()}
+                             ),
     Reducer<AppLaunchState, AppLaunchAction, Void> { state, action, _ in
         switch action {
         case .onAppear:
@@ -54,6 +88,8 @@ let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.c
             )
         case .settingsAction(.close):
             return Effect.just(.navigation(.pop))
+        case .settingsAction(.myAccount):
+            return Effect.just(.navigation(.push(.myAccount(MyAccountState()))))
         default:
             return .none
         }

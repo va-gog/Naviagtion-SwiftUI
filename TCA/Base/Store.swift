@@ -7,17 +7,17 @@
 
 import Combine
 
-public final class Store<State, Action>: ObservableObject {
+final class Store<State, Action>: ObservableObject {
     @Published public private(set) var state: State
     private let reducer: Reducer<State, Action, Void>
     private var effectCancellables: Set<AnyCancellable> = []
     
-    public init(initialState: State, reducer: Reducer<State, Action, Void>) {
+    init(initialState: State, reducer: Reducer<State, Action, Void>) {
         self.state = initialState
         self.reducer = reducer
     }
     
-    public func send(_ action: Action) {
+    func send(_ action: Action) {
         let effect = reducer.reduce(&state, action, ())
         effect.publisher
             .sink(receiveValue: send)
@@ -25,7 +25,7 @@ public final class Store<State, Action>: ObservableObject {
     }
 
     // TCA-style scope for parent-child communication
-    public func scope<ChildState, ChildAction>(
+    func scope<ChildState, ChildAction>(
         state toChildState: @escaping (State) -> ChildState?,
         action fromChildAction: @escaping (ChildAction) -> Action
     ) -> Store<ChildState, ChildAction> {

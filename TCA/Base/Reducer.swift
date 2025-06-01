@@ -7,7 +7,7 @@
 
 import CasePaths
 
-public struct Reducer<State, Action, Environment> {
+struct Reducer<State, Action, Environment> {
     public let reduce: (inout State, Action, Environment) -> Effect<Action>
     
     public init(_ reduce: @escaping (inout State, Action, Environment) -> Effect<Action>) {
@@ -15,7 +15,7 @@ public struct Reducer<State, Action, Environment> {
     }
 } 
 
-public extension Reducer {
+extension Reducer {
     func pullback<ParentState, ParentAction, ParentEnvironment>(
         state toChildState: WritableKeyPath<ParentState, State>,
         action toChildAction: AnyCasePath<ParentAction, Action>,
@@ -30,7 +30,7 @@ public extension Reducer {
     }
 }
 
-public extension Reducer {
+extension Reducer {
     static func combine(_ reducers: Reducer...) -> Reducer {
         Reducer { state, action, environment in
             reducers.reduce(.none) { effect, reducer in
