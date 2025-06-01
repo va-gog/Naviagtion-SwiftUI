@@ -17,33 +17,50 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("This is a Presented Screen which contains New Navigation Stack")
-                .foregroundColor(.red)
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .multilineTextAlignment(.center)
-            Button {
-                viewStore.send(.close)
-            } label: {
-                Text("Close")
-                    .foregroundColor(.blue)
-                    .foregroundStyle(.secondary)
+        
+        NavigationStack(path: Binding(
+            get: { viewStore.navigationState.navigationPath },
+            set: { viewStore.send(.navigation(.setPath($0))) }
+        )) {
+            VStack(spacing: 20) {
+                Text("This is a Presented Screen which contains New Navigation Stack")
+                    .foregroundColor(.red)
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .multilineTextAlignment(.center)
+                Button {
+                    viewStore.send(.close)
+                } label: {
+                    Text("Close")
+                        .foregroundColor(.blue)
+                        .foregroundStyle(.secondary)
+                }
+                Button {
+                    viewStore.send(.myAccount)
+                } label: {
+                    Text("My Accouunt")
+                        .foregroundColor(.blue)
+                        .foregroundStyle(.secondary)
+                }
+                if viewStore.isLoading {
+                    VStack(spacing: 8) {
+                        ProgressView()
+                        Text("Logging out...")
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                    }
+                }
             }
-            Button {
-                viewStore.send(.myAccount)
-            } label: {
-                Text("My Accouunt")
-                    .foregroundColor(.blue)
-                    .foregroundStyle(.secondary)
-            }
-            if viewStore.myAccountState != nil {
-                MyAccountView(
-                    store: store.scope(
-                        state: { $0.myAccountState },
-                        action: SettingsViewAction.myAccountAction
+            .navigationDestination(for: SettingsScreenState.self) { screen in
+                switch screen {
+                case .myAccount(let state):
+                    MyAccountView(
+                        store: store.scope(
+                            state: { _ in state },
+                            action: SettingsViewAction.myAccountAction
+                        )
                     )
-                )
+                }
             }
         }
     }

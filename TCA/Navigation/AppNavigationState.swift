@@ -16,8 +16,6 @@ enum AppScreenState: State, Hashable {
              return state.id
         case .settings(let state):
              return state.id
-        case .myAccount(let state):
-             return state.id
          case .forecast(let state):
               return state.id
         }
@@ -27,7 +25,6 @@ enum AppScreenState: State, Hashable {
     case authentication(AuthenticationState)
     case main(MainScreenState)
     case settings(SettingsState)
-    case myAccount(MyAccountState)
     case forecast(ForecastState)
 }
 

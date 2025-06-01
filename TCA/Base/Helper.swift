@@ -27,3 +27,19 @@ func forEachEnumCase<RootState, RootAction, EnumState, FeatureState, FeatureActi
         return effect
     }
 }
+
+func forCaseInOptional<RootState, RootAction, EnumState, FeatureState, FeatureAction, Environment>(
+    statePath: WritableKeyPath<RootState, EnumState?>,
+    casePath: CasePath<EnumState, FeatureState>,
+    actionPath: CasePath<RootAction, FeatureAction>,
+    reducer: Reducer<FeatureState, FeatureAction, Environment>
+) -> Reducer<RootState, RootAction, Environment> {
+    Reducer { state, action, environment in
+        guard let featureAction = actionPath.extract(from: action),
+              var featureState = state[keyPath: statePath].flatMap({ casePath.extract(from: $0) })
+        else { return .none }
+        let effect = reducer.reduce(&featureState, featureAction, environment)
+        state[keyPath: statePath] = casePath.embed(featureState)
+        return effect.map(actionPath.embed)
+    }
+}

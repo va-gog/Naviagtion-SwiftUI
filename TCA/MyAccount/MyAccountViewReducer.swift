@@ -13,14 +13,14 @@ struct MyAccountState: State {
 
 enum MyAccountAction: Equatable {
     case remove(String)
-    case logout
+    case didRequestLogout // <-- Add this
 }
 
 let myAccountReducer = Reducer<MyAccountState, MyAccountAction, Void> { state, action, _ in
     switch action {
-    case .logout:
-        return .none
     case .remove(let id):
         return Effect.just(.remove(id))
+    case .didRequestLogout:
+            return .none
     }
 }

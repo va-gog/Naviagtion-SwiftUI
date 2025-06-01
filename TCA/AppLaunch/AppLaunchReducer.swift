@@ -20,6 +20,7 @@ enum AppLaunchAction: Equatable {
     case forecastAction(ForecastAction)
     case settingsAction(SettingsViewAction)
     case myAccountAction(MyAccountAction)
+    case didLogoutFromSettings // <-- Add this
 }
 
 let mainScreenForEach = forEachEnumCase(
@@ -34,11 +35,11 @@ let forecastForEach = forEachEnumCase(
     actionPath: /AppLaunchAction.forecastAction,
     reducer: forecastReducer
 )
-let myAccountForEach = forEachEnumCase(
-    statePath: \AppNavigationState.navigationPath,
-    casePath: /AppScreenState.myAccount,
-    actionPath: /AppLaunchAction.myAccountAction,
-    reducer: myAccountReducer
+let settingForScreenCover = forCaseInOptional(
+    statePath: \AppNavigationState.screenCoverState,
+    casePath: /AppScreenState.settings,
+    actionPath: /AppLaunchAction.settingsAction,
+    reducer: settingsReducer
 )
 
 let navReducer: Reducer<AppNavigationState, NavigationAction<AppScreenState>, Void> = navigationReducer()
@@ -49,18 +50,21 @@ let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.c
         environment: { _ in () }
     ),
     mainScreenForEach.pullback(
-           state: \.navigationState,
-           action: .self,
-           environment: { _ in () }
-       ),
-       forecastForEach.pullback(
-           state: \.navigationState,
-           action: .self,
-           environment: { _ in () }
-       ),
-    myAccountForEach.pullback(state: \.navigationState, action: .self,
-                              environment: { _ in ()}
-                             ),
+        state: \.navigationState,
+        action: .self,
+        environment: { _ in () }
+    ),
+    forecastForEach.pullback(
+        state: \.navigationState,
+        action: .self,
+        environment: { _ in () }
+    ),
+    settingForScreenCover.pullback(
+        state: \.navigationState,
+        action: .self,
+        environment: { _ in ()}
+    ),
+    
     Reducer<AppLaunchState, AppLaunchAction, Void> { state, action, _ in
         switch action {
         case .onAppear:
@@ -75,7 +79,7 @@ let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.c
         case .mainScreenAction(.showNavigationScreen1):
             return Effect.just(.navigation(.push(.forecast(ForecastState()))))
         case .mainScreenAction(.showNavigationScreen2):
-            return Effect.just(.navigation(.push(.settings(SettingsState()))))
+            return Effect.just(.navigation(.present(.settings(SettingsState()))))
         case .forecastAction(.logout):
             return .concatenate(
                 Effect.just(.navigation(.popToRoot)),
@@ -87,9 +91,13 @@ let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.c
                 Effect.just(.navigation(.pop))
             )
         case .settingsAction(.close):
-            return Effect.just(.navigation(.pop))
-        case .settingsAction(.myAccount):
-            return Effect.just(.navigation(.push(.myAccount(MyAccountState()))))
+            return Effect.just(.navigation(.dismiss))
+        case .settingsAction(.myAccountDidRequestLogout):
+                // Pop to root and present authentication
+                return .concatenate(
+                    Effect.just(.navigation(.popToRoot)),
+                    Effect.just(.navigation(.present(.authentication(AuthenticationState()))))
+                )
         default:
             return .none
         }

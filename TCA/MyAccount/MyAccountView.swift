@@ -17,7 +17,7 @@ struct MyAccountView: View {
     var body: some View {
         HStack(spacing: 20) {
             Button {
-                viewStore.send(.logout)
+                viewStore.send(.didRequestLogout)
             } label: {
                 Text("Logout")
                     .foregroundColor(.yellow)

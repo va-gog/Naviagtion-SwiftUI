@@ -90,13 +90,6 @@ struct AppLaunchView: View {
                     action: { .settingsAction($0) }
                 )
             )
-        case .myAccount(let state):
-            MyAccountView(
-                store: store.scope(
-                    state: { _ in state },
-                    action: { .myAccountAction($0) }
-                )
-            )
         }
     }
 }
