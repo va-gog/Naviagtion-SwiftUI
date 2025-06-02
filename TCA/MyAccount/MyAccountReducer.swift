@@ -39,7 +39,7 @@ let myAccountReducer = Reducer<MyAccountState, MyAccountAction, Void> { state, a
         state.isLoading = isLoading
         return .none
     case .logoutCompleted:
-        return Effect.just(.didRequestLogout)
+        return .none
     default:
         return .none
     }
