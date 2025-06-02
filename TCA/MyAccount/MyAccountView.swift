@@ -15,21 +15,30 @@ struct MyAccountView: View {
     }
     
     var body: some View {
-        HStack(spacing: 20) {
+        VStack(spacing: 20) {
+            if viewStore.isLoading {
+                VStack(spacing: 8) {
+                    ProgressView()
+                    Text("Logging out...")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                }
+            }
+            
             Button {
                 viewStore.send(.didRequestLogout)
             } label: {
                 Text("Logout")
-                    .foregroundColor(.yellow)
-                    .foregroundStyle(.secondary)
             }
+            .buttonStyle(AppButtonStyle())
+
             Button {
-                viewStore.send(.remove("ID"))
+                viewStore.send(.didRequestRemove(1))
             } label: {
-                Text("Remove")
-                    .foregroundColor(.yellow)
-                    .foregroundStyle(.secondary)
+                Text("Remove Item from Main Screen")
             }
+            .buttonStyle(AppButtonStyle())
+
         }
     }
 }

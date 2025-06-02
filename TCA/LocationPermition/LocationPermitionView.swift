@@ -1,26 +1,26 @@
 //
-//  AuthenticView.swift
+//  LocationPermitionView.swift
 //  TCA
 //
 //  Created by Gohar Vardanyan on 11.03.25.
 
 import SwiftUI
 
-struct AuthenticView: View {
-    @ObservedObject var viewStore: ViewStore<AuthenticationState, AuthenticationAction>
+struct LocationPermitionView: View {
+    @ObservedObject var viewStore: ViewStore<LocPermitionState, LocPermitionAction>
     
-    init(store: Store<AuthenticationState, AuthenticationAction>) {
+    init(store: Store<LocPermitionState, LocPermitionAction>) {
         self.viewStore = ViewStore(store: store)
     }
     
     var body: some View {
         VStack {
-            Text("Authentication")
+            Text("Location access is required to use this feature.")
                 .padding()
             Button(action: {
-                viewStore.send(.loggedIn)
+                viewStore.send(.locationAccessPermited)
             }) {
-                Text("LogIn")
+                Text("Open Settings")
                     .foregroundColor(.blue)
                     .padding()
                     .background(Color(.systemGray5))

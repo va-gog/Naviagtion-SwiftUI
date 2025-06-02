@@ -15,21 +15,24 @@ struct ForecastView: View {
     }
     
     var body: some View {
-        HStack(spacing: 20) {
+        VStack(spacing: 20) {
+            Text("ForecastView")
+                .modifier(CustomTitleModifier())
+            
             Button {
                 viewStore.send(.logout)
             } label: {
                 Text("Logout")
-                    .foregroundColor(.green)
-                    .foregroundStyle(.secondary)
             }
+            .buttonStyle(AppButtonStyle())
+
             Button {
-                viewStore.send(.add("Added"))
+                viewStore.send(.add)
             } label: {
-                Text("Add")
-                    .foregroundColor(.green)
-                    .foregroundStyle(.secondary)
+                Text("Add Item to Main screen")
             }
+            .buttonStyle(AppButtonStyle())
+
         }
     }
 }

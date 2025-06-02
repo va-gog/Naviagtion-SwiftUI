@@ -17,31 +17,11 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        
         NavigationStack(path: Binding(
             get: { viewStore.navigationState.navigationPath },
             set: { viewStore.send(.navigation(.setPath($0))) }
         )) {
             VStack(spacing: 20) {
-                Text("This is a Presented Screen which contains New Navigation Stack")
-                    .foregroundColor(.red)
-                    .foregroundStyle(.primary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .multilineTextAlignment(.center)
-                Button {
-                    viewStore.send(.close)
-                } label: {
-                    Text("Close")
-                        .foregroundColor(.blue)
-                        .foregroundStyle(.secondary)
-                }
-                Button {
-                    viewStore.send(.myAccount)
-                } label: {
-                    Text("My Accouunt")
-                        .foregroundColor(.blue)
-                        .foregroundStyle(.secondary)
-                }
                 if viewStore.isLoading {
                     VStack(spacing: 8) {
                         ProgressView()
@@ -50,6 +30,23 @@ struct SettingsView: View {
                             .foregroundColor(.gray)
                     }
                 }
+                
+                Text("SettingsView is a Presented Screen which contains its own Navigation Stack")
+                    .modifier(CustomTitleModifier(font: .body))
+                
+                Button {
+                    viewStore.send(.close)
+                } label: {
+                    Text("Close Settings View")
+                }
+                .buttonStyle(AppButtonStyle())
+                
+                Button {
+                    viewStore.send(.myAccount)
+                } label: {
+                    Text("Push My Accouunt")
+                }
+                .buttonStyle(AppButtonStyle())
             }
             .navigationDestination(for: SettingsScreenState.self) { screen in
                 switch screen {

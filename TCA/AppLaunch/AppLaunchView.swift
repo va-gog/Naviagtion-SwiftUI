@@ -12,7 +12,7 @@ struct AppLaunchView: View {
         initialState: AppLaunchState(),
         reducer: appLaunchReducer
     )
-    @ObservedObject var viewStore: ViewStore<AppLaunchState, AppLaunchAction>
+    @ObservedObject var viewStore: ViewStore<AppLaunchState, AppAction>
     
     init() {
         let store = Store(
@@ -56,14 +56,14 @@ struct AppLaunchView: View {
     func screenView(for screen: AppScreenState) -> some View {
         switch screen {
         case .locPermition(let state):
-            LocPermitionView(
+            LocationPermitionView(
                 store: store.scope(
                     state: { _ in state },
                     action: { .locPermitionAction($0) }
                 )
             )
         case .authentication(let state):
-            AuthenticView(
+            AuthenticationView(
                 store: store.scope(
                     state: { _ in state },
                     action: { .authenticationAction($0) }

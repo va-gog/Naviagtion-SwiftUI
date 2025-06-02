@@ -9,9 +9,12 @@ import Foundation
 import Combine
 import CasePaths
 
-import CasePaths
+struct AppLaunchState: State {
+    var id: UUID = UUID()
+    var navigationState = AppNavigationState()
+}
 
-enum AppLaunchAction: Equatable {
+enum AppAction: Equatable {
     case onAppear
     case navigation(NavigationAction<AppScreenState>)
     case locPermitionAction(LocPermitionAction)
@@ -23,30 +26,10 @@ enum AppLaunchAction: Equatable {
     case didLogoutFromSettings // <-- Add this
 }
 
-let mainScreenForEach = forEachEnumCase(
-    statePath: \AppNavigationState.navigationPath,
-    casePath: /AppScreenState.main,
-    actionPath: /AppLaunchAction.mainScreenAction,
-    reducer: mainScreenReducer
-)
-let forecastForEach = forEachEnumCase(
-    statePath: \AppNavigationState.navigationPath,
-    casePath: /AppScreenState.forecast,
-    actionPath: /AppLaunchAction.forecastAction,
-    reducer: forecastReducer
-)
-let settingForScreenCover = forCaseInOptional(
-    statePath: \AppNavigationState.screenCoverState,
-    casePath: /AppScreenState.settings,
-    actionPath: /AppLaunchAction.settingsAction,
-    reducer: settingsReducer
-)
-
-let navReducer: Reducer<AppNavigationState, NavigationAction<AppScreenState>, Void> = navigationReducer()
-let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.combine(
+let appLaunchReducer: Reducer<AppLaunchState, AppAction, Void> = Reducer.combine(
     navReducer.pullback(
         state: \.navigationState,
-        action: /AppLaunchAction.navigation,
+        action: /AppAction.navigation,
         environment: { _ in () }
     ),
     mainScreenForEach.pullback(
@@ -65,7 +48,7 @@ let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.c
         environment: { _ in ()}
     ),
     
-    Reducer<AppLaunchState, AppLaunchAction, Void> { state, action, _ in
+    Reducer<AppLaunchState, AppAction, Void> { state, action, _ in
         switch action {
         case .onAppear:
             return Effect.just(.navigation(.present(.locPermition(LocPermitionState()))))
@@ -76,27 +59,31 @@ let appLaunchReducer: Reducer<AppLaunchState, AppLaunchAction, Void> = Reducer.c
                 Effect.just(.navigation(.dismiss)),
                 Effect.just(.navigation(.push(.main(MainScreenState()))))
             )
-        case .mainScreenAction(.showNavigationScreen1):
+        case .mainScreenAction(.pushForecastView):
             return Effect.just(.navigation(.push(.forecast(ForecastState()))))
-        case .mainScreenAction(.showNavigationScreen2):
+        case .mainScreenAction(.presentSettingsView):
             return Effect.just(.navigation(.present(.settings(SettingsState()))))
         case .forecastAction(.logout):
             return .concatenate(
                 Effect.just(.navigation(.popToRoot)),
                 Effect.just(.navigation(.present(.authentication(AuthenticationState()))))
             )
-        case .forecastAction(.add(let id)):
+        case .forecastAction(.addItem(let item)):
             return .concatenate(
-                Effect.just(.mainScreenAction(.add(id))),
+                Effect.just(.mainScreenAction(.add(item))),
                 Effect.just(.navigation(.pop))
             )
         case .settingsAction(.close):
             return Effect.just(.navigation(.dismiss))
         case .settingsAction(.myAccountDidRequestLogout):
-                // Pop to root and present authentication
                 return .concatenate(
                     Effect.just(.navigation(.popToRoot)),
                     Effect.just(.navigation(.present(.authentication(AuthenticationState()))))
+                )
+        case .settingsAction(.myAccountDidRequestRemove(let id)):
+            return .concatenate(
+                Effect.just(.navigation(.dismiss)),
+                Effect.just(.mainScreenAction(.remove(id)))
                 )
         default:
             return .none

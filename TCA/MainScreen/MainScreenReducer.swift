@@ -9,30 +9,25 @@ import Foundation
 
 struct MainScreenState: State {
     var id: UUID = UUID()
-    var items: [String] = []
+    var items: [ForecastItemModel] = []
 }
 
 enum MainScreenAction: Equatable {
-    case logout
-    case add(String)
-    case remove(String)
-    case showNavigationScreen1
-    case showNavigationScreen2
+    case add(ForecastItemModel)
+    case remove(Int)
+    case pushForecastView
+    case presentSettingsView
 }
 
 let mainScreenReducer = Reducer<MainScreenState, MainScreenAction, Void> { state, action, _ in
     switch action {
-    case .showNavigationScreen1:
-        return .none
-    case .showNavigationScreen2:
-        return .none
-    case .add(let id):
-        state.items.append(id)
+    case .add(let item):
+        state.items.append(item)
         return .none
     case .remove(let id):
-        state.items.removeAll { $0 == id }
+        state.items.removeAll { $0.id == id }
         return .none
-    case .logout:
+    default:
         return .none
     }
     

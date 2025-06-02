@@ -27,8 +27,3 @@ enum AppScreenState: State, Hashable {
     case settings(SettingsState)
     case forecast(ForecastState)
 }
-
-struct AppLaunchState: State {
-    var id: UUID = UUID()
-    var navigationState = AppNavigationState()
-}

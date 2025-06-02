@@ -15,28 +15,30 @@ struct MainScreenView: View {
     
     var body: some View {
         VStack(spacing: 40) {
+            Text("Main Screen")
+                .modifier(CustomTitleModifier())
+            
             Button {
-                viewStore.send(.showNavigationScreen1)
+                viewStore.send(.pushForecastView)
             } label: {
-                Text("Push screen")
-                    .padding()
-                    .foregroundColor(.red)
-                    .cornerRadius(10)
+                Text("Push Forecast Screen")
             }
+            .buttonStyle(AppButtonStyle())
+
             Button {
-                viewStore.send(.showNavigationScreen2)
+                viewStore.send(.presentSettingsView)
             } label: {
-                Text("Present new NavigationStack")
-                    .padding()
-                    .foregroundColor(.red)
-                    .cornerRadius(10)
+                Text("Present Settings Screen")
             }
+            .buttonStyle(AppButtonStyle())
+
             ForEach(viewStore.items, id: \.self) { item in
-                Text(item)
+                Text(item.name)
                     .padding()
                     .foregroundColor(.red)
                     .cornerRadius(10)
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
