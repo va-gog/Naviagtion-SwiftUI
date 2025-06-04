@@ -45,11 +45,6 @@
 			path = TCATests;
 			sourceTree = "<group>";
 		};
-		842597302D4CB57C00EBFBE3 /* TCAUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TCAUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,7 +79,6 @@
 			children = (
 				842597152D4CB57A00EBFBE3 /* TCA */,
 				842597262D4CB57C00EBFBE3 /* TCATests */,
-				842597302D4CB57C00EBFBE3 /* TCAUITests */,
 				846754F22DE3CA8B00EA3E15 /* Frameworks */,
 				842597142D4CB57A00EBFBE3 /* Products */,
 			);
@@ -169,9 +163,6 @@
 			);
 			dependencies = (
 				8425972F2D4CB57C00EBFBE3 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				842597302D4CB57C00EBFBE3 /* TCAUITests */,
 			);
 			name = TCAUITests;
 			packageProductDependencies = (

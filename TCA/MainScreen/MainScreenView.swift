@@ -33,7 +33,7 @@ struct MainScreenView: View {
             .buttonStyle(AppButtonStyle())
 
             ForEach(viewStore.items, id: \.self) { item in
-                Text(item.name)
+                Text("New Added \(item.name)")
                     .padding()
                     .foregroundColor(.red)
                     .cornerRadius(10)

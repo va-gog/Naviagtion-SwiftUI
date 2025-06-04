@@ -17,3 +17,5 @@ enum NavigationAction<ScreenState: Hashable>: Hashable {
     case setScreenCoverState(ScreenState?)
     case popToRoot
 }
+
+
